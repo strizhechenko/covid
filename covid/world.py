@@ -14,7 +14,7 @@ def who_fetch_latest_pdf():
     report_list = report_list.find('div', attrs={'class': 'content-block'})
     report = report_list.find('a').attrs['href'].split('?')[0]
     url = 'https://www.who.int' + report
-    logging.warning("report url: %s", url)
+    logging.debug("report url: %s", url)
     filename = report.split('/')[-1]
     pdf = requests.get(url).content
     with open(filename, 'wb') as fd:
@@ -43,7 +43,7 @@ def who_print_stat(text):
         if stop == line.strip():
             break
         if do_print:
-            print("{0:10} {1}".format(count, re.sub(r'[a-z ]', '', line).split('(')[0]))
+            print("{0:12} {1}".format(count, re.sub(r'[a-z ]', '', line).split('(')[0]))
             if count == "cases":
                 count = "dead"
         if start == line.strip():

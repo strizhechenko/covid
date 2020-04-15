@@ -3,7 +3,7 @@
 import argparse
 import os
 
-from covid_ru import ru
+from covid_ru import main as ru
 
 from covid.ekb import ekb
 from covid.world import who_fetch_latest_pdf, who_print_stat, who_read_first_page, recovered_stat
@@ -22,7 +22,8 @@ def main():
         args.russia = True
         args.ekb = True
         args.auto = True
-    assert args.auto or args.pdf or args.fetch_pdf or args.russia or args.ekb
+    if not (args.auto or args.pdf or args.fetch_pdf or args.russia or args.ekb):
+        args.auto = True
     if args.auto or args.fetch_pdf:
         args.pdf = who_fetch_latest_pdf()
         if args.fetch_pdf:
@@ -32,13 +33,14 @@ def main():
         ekb()
     if args.russia:
         print('# - Russia ---------------')
-        args.cases = args.tests = args.recovered = args.dead = True
-        ru(args)
+        for _key, _value in ru().items():
+            print("{0:12} {1}".format(_key, _value))
+
         if args.all:
             print('# - World ----------------')
     if (not args.russia and not args.ekb) or args.all:
         who_print_stat(who_read_first_page(args.pdf))
-        print("{0:10} {1}".format('recovered', recovered_stat()))
+        print("{0:12} {1}".format('recovered', recovered_stat()))
     if args.auto:
         os.unlink(args.pdf)
 
