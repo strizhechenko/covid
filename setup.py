@@ -31,6 +31,8 @@ setup(
     install_requires=[
         'beautifulsoup4',
         'requests',
+        'covid-ru',
+        'PyPDF2',
     ],
     entry_points={
         'console_scripts': [
