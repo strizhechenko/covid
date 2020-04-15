@@ -11,15 +11,15 @@ def read(*paths):
 
 
 setup(
-    name='covid-ru',
-    version='0.0.6',
-    packages=['covid_ru'],
-    url='https://github.com/strizhechenko/covid-ru',
+    name='covid',
+    version='0.0.1',
+    packages=['covid'],
+    url='https://github.com/strizhechenko/covid',
     license='MIT',
     author='Oleg Strizhechenko',
     author_email='oleg.strizhechenko@gmail.com',
-    description='Getting latest covid-19 stats in Russia to your cli',
-    long_description=(read('README.rst')),
+    description='Getting latest covid-19 stats in World, Russia and Ekaterinburg to your cli',
+    # long_description=(read('README.rst')),
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: Public Domain',
@@ -34,7 +34,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'covid-ru=covid_ru.__init__:main',
+            'covid=covid.__init__:main',
         ],
     },
 )
