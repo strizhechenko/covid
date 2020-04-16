@@ -1,5 +1,4 @@
 import logging
-import re
 
 import PyPDF2
 import requests
@@ -33,21 +32,32 @@ def who_read_first_page(pdf):
 
 
 def who_print_stat(text):
-    """ :param text: выдернуть статистику по заражениям и смертям """
-    start, stop = "Globally", "European Region"
-    do_print = False
-    count = "cases"
-    for line in text.split('\n'):
-        if not line.strip():
-            continue
-        if stop == line.strip():
+    """
+    выдернуть статистику по заражениям и смертям.
+    PyPDF2 ставит переносы посреди строк, так что работаем на уровне слов.
+    :param text: распарсенный PyPDF'ом текст страницы
+    """
+    words, word = list(reversed(text.split())), None
+    while word != "Globally":
+        word = words.pop()
+    cases = ""
+    while True:
+        word = words.pop()
+        if word == "confirmed":
             break
-        if do_print:
-            print("{0:12} {1}".format(count, re.sub(r'[a-z ]', '', line).split('(')[0]))
-            if count == "cases":
-                count = "dead"
-        if start == line.strip():
-            do_print = True
+        else:
+            cases += word
+    while ")" not in word:
+        word = words.pop()
+    deaths = ""
+    while True:
+        word = words.pop()
+        if word == "deaths":
+            break
+        else:
+            deaths += word
+    print("{0:12} {1}".format("cases", cases))
+    print("{0:12} {1}".format("dead", deaths))
 
 
 def recovered_stat():
