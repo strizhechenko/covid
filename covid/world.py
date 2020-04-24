@@ -1,4 +1,5 @@
 import logging
+import re
 
 import PyPDF2
 import requests
@@ -63,11 +64,7 @@ def who_print_stat(text):
 def recovered_stat():
     """ WHO почему-то не имеет информации по выздоровевшим. Дёргаем с левого сайта. """
     soup = url2soup("https://www.worldometers.info/coronavirus/coronavirus-cases/")
-    recovered = soup.find('td', text="Recovered/Discharged")
-    items = [x.text for x in recovered.parent.parent.children if hasattr(x, 'text')]
-    needle = False
-    for item in items:
-        if needle:
-            return int(item.strip().split()[0].replace(',', ''))
-        if "Recovered/Discharged" in item:
-            needle = True
+    recovered = soup.find('div', attrs={'class': 'tabbable-panel-cured'})
+    for line in str(recovered).split('\n'):
+        if line.strip().startswith('data:'):
+            return int(re.sub(r"[^0-9]", "", line.split(',')[-2]))
