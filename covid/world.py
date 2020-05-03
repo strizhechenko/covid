@@ -32,31 +32,34 @@ def who_read_first_page(pdf):
     return pdf_reader.getPage(0).extractText()
 
 
-def who_print_stat(text):
+def skip(words, to):
+    word = None
+    while word != to:
+        word = words.pop()
+
+
+def combine_word(words, until):
+    result = ""
+    while True:
+        word = words.pop()
+        if word == until:
+            break
+        result += word
+    return result
+
+
+def who_print_stat(text, report_type="new"):
     """
     выдернуть статистику по заражениям и смертям.
     PyPDF2 ставит переносы посреди строк, так что работаем на уровне слов.
     :param text: распарсенный PyPDF'ом текст страницы
+    :param report_type: версия отчёта, new - новые, old - старые. Отличается начальное слово.
     """
-    words, word = list(reversed(text.split())), None
-    while word != "Globally":
-        word = words.pop()
-    cases = ""
-    while True:
-        word = words.pop()
-        if word == "confirmed":
-            break
-        else:
-            cases += word
-    while ")" not in word:
-        word = words.pop()
-    deaths = ""
-    while True:
-        word = words.pop()
-        if word == "deaths":
-            break
-        else:
-            deaths += word
+    words = list(reversed(text.split()))
+    skip(words, to="Globally")
+    cases = combine_word(words, "cases" if report_type == "new" else "confirmed")
+    skip(words, to=")")
+    deaths = combine_word(words, "deaths")
     print("{0:12} {1}".format("cases", cases))
     print("{0:12} {1}".format("dead", deaths))
 
