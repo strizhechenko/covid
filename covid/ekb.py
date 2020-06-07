@@ -9,8 +9,8 @@ import logging
 
 class Data(dict):
     def __repr__(self):
-        return f"cases: {self['cases']:5} dead: {self['dead']:3} recovered: {self['recovered']:5} " \
-               f"solved {self['solved']:6.2f}% sick {self['sick']:5}"
+        return f"cases: {0:5} dead: {1:3} recovered: {2:5} solved {3:6.2f}% sick {4:5}".format(
+            self['cases'], self['dead'], self['recovered'], self['solved'], self['sick'])
 
 
 def ekb_raw_data_fetch():
