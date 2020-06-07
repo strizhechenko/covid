@@ -12,7 +12,7 @@ def read(*paths):
 
 setup(
     name='covid',
-    version='0.0.3',
+    version='0.0.4',
     packages=['covid'],
     url='https://github.com/strizhechenko/covid',
     license='MIT',
@@ -37,6 +37,7 @@ setup(
     entry_points={
         'console_scripts': [
             'covid=covid.__init__:main',
+            'covid-ekb=covid.ekb:ekb_all',
         ],
     },
 )
