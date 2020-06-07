@@ -9,7 +9,7 @@ import logging
 
 class Data(dict):
     def __repr__(self):
-        return f"cases: {0:5} dead: {1:3} recovered: {2:5} solved {3:6.2f}% sick {4:5}".format(
+        return "cases: {0:5} dead: {1:3} recovered: {2:5} solved {3:6.2f}% sick {4:5}".format(
             self['cases'], self['dead'], self['recovered'], self['solved'], self['sick'])
 
 
@@ -23,7 +23,7 @@ def ekb_raw_data_fetch():
 
 
 def ekb_raw_data_read(filename):
-    with open(filename) as fp:
+    with open(str(filename)) as fp:
         data = next(i for i in json.load(fp)['Items'] if i['IsoCode'] == "RU-SVE")
         keys = list(data.keys())
         data['cases'] = data['Confirmed']
@@ -51,10 +51,10 @@ def ekb():
 def ekb_all():
     for filename in sorted(Path('/root/covid/').iterdir()):
         if str(filename).endswith('.json'):
-            try:
-                print(filename.name.replace('.json', ''), Data(ekb_raw_data_process(ekb_raw_data_read(filename))))
-            except json.decoder.JSONDecodeError:
-                logging.exception(filename.name)
+            # try:
+            print(filename.name.replace('.json', ''), Data(ekb_raw_data_process(ekb_raw_data_read(filename))))
+            # except json.decoder.JSONDecodeError:
+            #     logging.exception(filename.name)
 
 
 if __name__ == '__main__':
