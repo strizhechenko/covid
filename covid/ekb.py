@@ -4,7 +4,9 @@
 from covid.utils import url2soup
 import json
 from pathlib import Path
-import logging
+import argparse
+from datetime import date, timedelta
+from copy import deepcopy
 
 
 class Data(dict):
@@ -49,12 +51,38 @@ def ekb():
 
 
 def ekb_all():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--limit', type=int, default=7)
+    parser.add_argument('-p', '--predict', type=int)
+    args = parser.parse_args()
+    data = {}
     for filename in sorted(Path('/root/covid/').iterdir()):
-        if str(filename).endswith('.json'):
-            # try:
-            print(filename.name.replace('.json', ''), Data(ekb_raw_data_process(ekb_raw_data_read(filename))))
-            # except json.decoder.JSONDecodeError:
-            #     logging.exception(filename.name)
+        if filename.name.endswith('.json'):
+            key = filename.name.replace('.json', '')
+            value = Data(ekb_raw_data_process(ekb_raw_data_read(filename)))
+            data[key] = value
+    for filename in sorted(data)[-args.limit:]:
+        print(filename, data[filename])
+    if args.predict:
+        acc = dict()
+        for key in 'cases', 'dead', 'recovered':
+            if key not in acc:
+                acc[key] = []
+            for filename in sorted(data)[-args.limit:]:
+                acc[key].append(data[filename][key])
+            _min = min(acc[key])
+            _max = max(acc[key])
+            acc[key] = (_max - _min) / _min / args.limit
+        last_date_str = max(data.keys())
+        last_date = date(*map(int, last_date_str.split('.')))
+        print('---- predict ----', acc)
+        base_data = deepcopy(data[last_date_str])
+        prev = deepcopy(base_data)
+        for day in range(args.predict):
+            today = deepcopy(prev)
+            for key in 'cases', 'dead', 'recovered':
+                today[key] += round(prev[key] * acc[key] * day)
+            print(last_date + timedelta(days=day), Data(ekb_raw_data_process(today)))
 
 
 if __name__ == '__main__':
